@@ -12,6 +12,9 @@ vidgear = "0.3.2"
 loguru = "^0.7.1"
 imutils = "^0.5.4"
 
+[tool.poetry.dev-dependencies]
+ruff = { version = "^0.0.287", python = ">=3.8.17" }
+
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,34 +1,29 @@
+from pathlib import Path
+
 from valy.pipelines.pipeline import Pipeline
-import cv2
+
+from .file_stream import FileStream
+
 
 class InputPipeline(Pipeline):
     """Pipeline task to capture video stream from file or webcam
     using faster, threaded method to reading video frames."""
 
-    def __init__(self, src):
-        if isinstance(src, int):
-            self.cap = WebcamVideoCapture(src).start()
-            self.frame_count = -1
-        else:
-            self.cap = FileVideoCapture(src).start()
-            self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    def __init__(self, stream_source: str):
+        self.stream = FileStream(Path(stream_source))
+        self.stream.start()
 
-        self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
-        self.frame_size = (int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
         self.frame_num = 0
-
         super().__init__()
 
     def generator(self):
         """Yields the frame content and metadata."""
 
-        while self.cap.running():
-            image = self.cap.read()
-            data = {
-                "frame_num": self.frame_num,
-                "image_id": f"{self.frame_num:06d}",
-                "image": image,
-            }
+        while True:
+            image = self.stream.read()
+            if image is None:
+                break
+            
             self.frame_num += 1
             if self.filter(data):
                 yield self.map(data)
@@ -39,4 +34,4 @@ class InputPipeline(Pipeline):
         This function should be triggered after the pipeline completes.
         """
 
-        self.cap.stop()
+        self.stream.stop()
