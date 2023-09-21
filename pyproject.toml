@@ -7,10 +7,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.8.17"
-opencv-python = "4.5.5.64"
+opencv-python = "^4.8.0.76"
 vidgear = "0.3.2"
 loguru = "^0.7.1"
 imutils = "^0.5.4"
+black = "^23.9.1"
 
 [tool.poetry.dev-dependencies]
 ruff = { version = "^0.0.287", python = ">=3.8.17" }
